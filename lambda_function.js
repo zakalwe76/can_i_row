@@ -1,6 +1,39 @@
 const Alexa = require('ask-sdk-core');
 const https = require('https');
 
+// Cache object to store API responses
+let cache = {
+    data: null,
+    timestamp: null
+};
+
+// Cache duration in milliseconds (15 minutes)
+const CACHE_DURATION = 15 * 60 * 1000;
+
+// Helper function to check if cache is valid
+function isCacheValid() {
+    if (!cache.data || !cache.timestamp) {
+        return false;
+    }
+    
+    const now = Date.now();
+    const cacheAge = now - cache.timestamp;
+    
+    return cacheAge < CACHE_DURATION;
+}
+
+// Helper function to clear cache
+function clearCache() {
+    cache.data = null;
+    cache.timestamp = null;
+}
+
+// Helper function to set cache
+function setCache(data) {
+    cache.data = data;
+    cache.timestamp = Date.now();
+}
+
 // Helper function to make HTTP requests
 function httpGet(url) {
     return new Promise((resolve, reject) => {
@@ -32,7 +65,36 @@ function httpGet(url) {
     });
 }
 
-// Helper function to format date/time
+// Helper function to get flow data (from cache or API)
+async function getFlowData() {
+    // Check if cache is valid
+    if (isCacheValid()) {
+        console.log('Using cached data');
+        return cache.data;
+    }
+    
+    // Cache is invalid or empty, fetch fresh data
+    console.log('Fetching fresh data from API');
+    const apiUrl = 'https://environment.data.gov.uk/flood-monitoring/id/measures/2200TH-flow--Mean-15_min-m3_s';
+    
+    try {
+        const apiResponse = await httpGet(apiUrl);
+        
+        // Cache the fresh data
+        setCache(apiResponse);
+        
+        return apiResponse;
+    } catch (error) {
+        // If API call fails, try to use expired cache data if available
+        if (cache.data) {
+            console.log('API call failed, using expired cache data');
+            return cache.data;
+        }
+        
+        // No cache data available, throw the error
+        throw error;
+    }
+}
 function formatDateTime(dateTimeString) {
     const date = new Date(dateTimeString);
     const options = {
@@ -53,11 +115,9 @@ const RowingConditionsIntentHandler = {
             && (Alexa.getIntentName(handlerInput.requestEnvelope) === 'RowingConditionsIntent'
                 || Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.LaunchIntent');
     },
-    async handle(handlerInput) {
-        const apiUrl = 'https://environment.data.gov.uk/flood-monitoring/id/measures/2200TH-flow--Mean-15_min-m3_s';
-        
+    async handle(handlerInput) {        
         try {
-            const apiResponse = await httpGet(apiUrl);
+            const apiResponse = await getFlowData();
             
             // Check if we have the required data
             if (!apiResponse.items || !apiResponse.items[0] || !apiResponse.items[0].latestReading) {
