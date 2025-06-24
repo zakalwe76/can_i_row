@@ -1,0 +1,34 @@
+{
+  "interactionModel": {
+    "languageModel": {
+      "invocationName": "can i row today",
+      "intents": [
+        {
+          "name": "RowingConditionsIntent",
+          "slots": [],
+          "samples": [
+            "can I row today",
+            "can we row today",
+            "what is the current flow rate",
+            "what's the flow rate",
+            "check rowing conditions",
+            "are there any restrictions today"
+          ]
+        },
+        {
+          "name": "AMAZON.HelpIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.StopIntent",
+          "samples": []
+        },
+        {
+          "name": "AMAZON.CancelIntent",
+          "samples": []
+        }
+      ],
+      "types": []
+    }
+  }
+}

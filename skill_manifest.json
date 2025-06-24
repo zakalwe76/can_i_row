@@ -1,0 +1,50 @@
+{
+  "manifest": {
+    "publishingInformation": {
+      "locales": {
+        "en-GB": {
+          "summary": "Check rowing conditions based on current water flow rates",
+          "examplePhrases": [
+            "Alexa, ask can I row today",
+            "Alexa, ask can I row today what is the current flow rate",
+            "Alexa, ask can I row today can I row today"
+          ],
+          "keywords": [
+            "rowing",
+            "water sports",
+            "flow rate",
+            "river conditions",
+            "safety"
+          ],
+          "name": "Can I Row Today",
+          "description": "This skill helps rowers check current water flow conditions to determine if it's safe to row. It connects to the UK Environment Agency's real-time flood monitoring data to provide current flow rates and appropriate safety restrictions based on the water conditions."
+        }
+      },
+      "isAvailableWorldwide": false,
+      "testingInstructions": "Ask 'Can I row today?' or 'What is the current flow rate?' to get current rowing conditions.",
+      "category": "HEALTH_AND_FITNESS",
+      "distributionCountries": ["GB"]
+    },
+    "apis": {
+      "custom": {
+        "endpoint": {
+          "uri": "arn:aws:lambda:eu-west-1:YOUR_ACCOUNT_ID:function:CanIRowToday"
+        },
+        "interfaces": []
+      }
+    },
+    "manifestVersion": "1.0",
+    "privacyAndCompliance": {
+      "allowsPurchases": false,
+      "locales": {
+        "en-GB": {
+          "privacyPolicyUrl": "",
+          "termsOfUseUrl": ""
+        }
+      },
+      "isExportCompliant": true,
+      "isChildDirected": false,
+      "usesPersonalInfo": false
+    }
+  }
+}
