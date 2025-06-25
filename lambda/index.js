@@ -1,13 +1,22 @@
-/* *
- * This sample demonstrates handling intents from an Alexa skill using the Alexa Skills Kit SDK (v2).
- * Please visit https://alexa.design/cookbook for additional examples on implementing slots, dialog management,
- * session persistence, api calls, and more.
- * */
 const Alexa = require('ask-sdk-core');
 const https = require('https');
 
-// Helper function to make HTTP requests
-function httpGet(url) {
+// Cache object to store API responses
+let cache = {
+    data: null,
+    timestamp: null
+};
+
+// Cache duration in milliseconds (15 minutes)
+const CACHE_DURATION = 15 * 60 * 1000;
+
+// Environment Agency API URL
+const API_URL = 'https://environment.data.gov.uk/flood-monitoring/id/measures/2200TH-flow--Mean-15_min-m3_s';
+
+/**
+ * Helper function to make HTTPS requests
+ */
+function makeHttpsRequest(url) {
     return new Promise((resolve, reject) => {
         const request = https.get(url, (response) => {
             let data = '';
@@ -21,105 +30,180 @@ function httpGet(url) {
                     const jsonData = JSON.parse(data);
                     resolve(jsonData);
                 } catch (error) {
-                    reject(error);
+                    console.error('Error parsing JSON:', error);
+                    reject(new Error('Failed to parse API response'));
                 }
             });
         });
         
         request.on('error', (error) => {
+            console.error('HTTPS request error:', error);
             reject(error);
         });
         
-        request.setTimeout(5000, () => {
-            request.abort();
+        request.setTimeout(10000, () => {
+            console.error('Request timeout');
+            request.destroy();
             reject(new Error('Request timeout'));
         });
     });
 }
 
-// Helper function to format date/time
-function formatDateTime(dateTimeString) {
-    const date = new Date(dateTimeString);
-    const options = {
-        weekday: 'long',
-        month: 'long',
-        day: 'numeric',
-        hour: 'numeric',
-        minute: '2-digit',
-        timeZone: 'Europe/London'
-    };
-    return date.toLocaleDateString('en-GB', options);
+/**
+ * Check if cache is valid (not empty and less than 15 minutes old)
+ */
+function isCacheValid() {
+    if (!cache.data || !cache.timestamp) {
+        console.log('Cache is empty');
+        return false;
+    }
+    
+    const now = Date.now();
+    const cacheAge = now - cache.timestamp;
+    const isValid = cacheAge < CACHE_DURATION;
+    
+    console.log(`Cache age: ${cacheAge}ms, Valid: ${isValid}`);
+    return isValid;
 }
 
-// Main intent handler for rowing conditions
+/**
+ * Get flow data from cache or API
+ */
+async function getFlowData() {
+    try {
+        // Check if cache is valid
+        if (isCacheValid()) {
+            console.log('Using cached data');
+            return cache.data;
+        }
+        
+        console.log('Cache invalid, fetching fresh data from API');
+        
+        // Fetch fresh data from API
+        const apiResponse = await makeHttpsRequest(API_URL);
+        
+        // Extract the required fields
+        if (!apiResponse.items || !apiResponse.items.latestReading) {
+            throw new Error('Invalid API response structure');
+        }
+        
+        const latestReading = apiResponse.items.latestReading;
+        const flowData = {
+            label: apiResponse.items.label || 'River Flow',
+            dateTime: latestReading.dateTime,
+            value: latestReading.value
+        };
+        
+        // Cache the data
+        cache.data = flowData;
+        cache.timestamp = Date.now();
+        
+        console.log('Data cached successfully:', flowData);
+        return flowData;
+        
+    } catch (error) {
+        console.error('Error getting flow data:', error);
+        throw error;
+    }
+}
+
+/**
+ * Generate reply based on flow value
+ */
+function generateReply(flowData) {
+    const { dateTime, value } = flowData;
+    const flowValue = parseFloat(value);
+    
+    // Format the date time for speech
+    const date = new Date(dateTime);
+    const formattedDateTime = date.toLocaleString('en-GB', {
+        timeZone: 'Europe/London',
+        weekday: 'long',
+        hour: '2-digit',
+        minute: '2-digit'
+    });
+    
+    let reply;
+    
+    if (flowValue <= 50) {
+        reply = `As of ${formattedDateTime}, the current flow rate is ${flowValue}, there are no restrictions today`;
+    } else if (flowValue >= 51 && flowValue <= 75) {
+        reply = `As of ${formattedDateTime}, the current flow rate is ${flowValue}, there are High Flow restrictions today. No novice coxes or steerpersons`;
+    } else if (flowValue >= 76 && flowValue <= 100) {
+        reply = `As of ${formattedDateTime}, the current flow rate is ${flowValue}, there are Very High Flow restrictions today. No singles, doubles, or pairs today`;
+    } else {
+        reply = `As of ${formattedDateTime}, the current flow rate is ${flowValue}, there is no rowing today, it's too dangerous.`;
+    }
+    
+    console.log('Generated reply:', reply);
+    return reply;
+}
+
+/**
+ * Main intent handler for rowing conditions
+ */
 const RowingConditionsIntentHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
-            && (Alexa.getIntentName(handlerInput.requestEnvelope) === 'RowingConditionsIntent'
-                || Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.LaunchIntent');
+            && Alexa.getIntentName(handlerInput.requestEnvelope) === 'RowingConditionsIntent';
     },
     async handle(handlerInput) {
-        const apiUrl = 'https://environment.data.gov.uk/flood-monitoring/id/measures/2200TH-flow--Mean-15_min-m3_s';
+        console.log('RowingConditionsIntent handler called');
+        
+        let reply;
         
         try {
-            const apiResponse = await httpGet(apiUrl);
-            
-            // Check if we have the required data
-            if (!apiResponse.items || !apiResponse.items[0] || !apiResponse.items[0].latestReading) {
-                return handlerInput.responseBuilder
-                    .speak("I'm having trouble getting data")
-                    .getResponse();
-            }
-            
-            const latestReading = apiResponse.items[0].latestReading;
-            const value = parseFloat(latestReading.value);
-            const dateTime = formatDateTime(latestReading.dateTime);
-            
-            let reply;
-            
-            // Determine reply based on flow rate
-            if (value <= 50) {
-                reply = `As of ${dateTime}, the current flow rate is ${value} cubic meters per second, there are no restrictions today`;
-            } else if (value >= 51 && value <= 75) {
-                reply = `As of ${dateTime}, the current flow rate is ${value} cubic meters per second, there are High Flow restrictions today. No novice coxes or steerpersons`;
-            } else if (value >= 76 && value <= 100) {
-                reply = `As of ${dateTime}, the current flow rate is ${value} cubic meters per second, there are Very High Flow restrictions today. No singles, doubles, or pairs today`;
-            } else {
-                reply = `As of ${dateTime}, the current flow rate is ${value} cubic meters per second, there is no rowing today, it's too dangerous.`;
-            }
-            
-            return handlerInput.responseBuilder
-                .speak(reply)
-                .getResponse();
-                
+            const flowData = await getFlowData();
+            reply = generateReply(flowData);
         } catch (error) {
-            console.error('Error fetching data:', error);
-            return handlerInput.responseBuilder
-                .speak("I'm having trouble getting data")
-                .getResponse();
+            console.error('Error in RowingConditionsIntent:', error);
+            reply = `I'm having trouble getting data. Error: ${error.message}`;
         }
+        
+        return handlerInput.responseBuilder
+            .speak(reply)
+            .reprompt('Is there anything else you\'d like to know about rowing conditions?')
+            .getResponse();
     }
 };
 
-// Launch request handler
+/**
+ * Launch request handler (when skill is opened without specific intent)
+ */
 const LaunchRequestHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'LaunchRequest';
     },
-    handle(handlerInput) {
-        // Redirect to the main rowing conditions handler
-        return RowingConditionsIntentHandler.handle(handlerInput);
+    async handle(handlerInput) {
+        console.log('LaunchRequest handler called');
+        
+        let reply;
+        
+        try {
+            const flowData = await getFlowData();
+            reply = generateReply(flowData);
+        } catch (error) {
+            console.error('Error in LaunchRequest:', error);
+            reply = `I'm having trouble getting data. Error: ${error.message}`;
+        }
+        
+        return handlerInput.responseBuilder
+            .speak(reply)
+            .reprompt('Is there anything else you\'d like to know about rowing conditions?')
+            .getResponse();
     }
 };
 
-// Help intent handler
+/**
+ * Help intent handler
+ */
 const HelpIntentHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.HelpIntent';
     },
     handle(handlerInput) {
-        const speakOutput = 'You can ask me "Can I row today?" or "What is the current flow rate?" to check rowing conditions based on the current water flow rate.';
+        const speakOutput = 'I can tell you if it\'s safe to row today based on river flow conditions. Just ask "can I row today?" and I\'ll check the latest flow data from the UK Environment Agency.';
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
@@ -128,7 +212,9 @@ const HelpIntentHandler = {
     }
 };
 
-// Cancel and Stop intent handler
+/**
+ * Cancel and Stop intent handler
+ */
 const CancelAndStopIntentHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest'
@@ -144,25 +230,46 @@ const CancelAndStopIntentHandler = {
     }
 };
 
-// Session ended request handler
+/**
+ * Session ended request handler
+ */
 const SessionEndedRequestHandler = {
     canHandle(handlerInput) {
         return Alexa.getRequestType(handlerInput.requestEnvelope) === 'SessionEndedRequest';
     },
     handle(handlerInput) {
-        console.log(`~~~~ Session ended: ${JSON.stringify(handlerInput.requestEnvelope)}`);
+        console.log(`Session ended: ${JSON.stringify(handlerInput.requestEnvelope.request.reason)}`);
         return handlerInput.responseBuilder.getResponse();
     }
 };
 
-// Error handler
+/**
+ * Intent reflector for debugging
+ */
+const IntentReflectorHandler = {
+    canHandle(handlerInput) {
+        return Alexa.getRequestType(handlerInput.requestEnvelope) === 'IntentRequest';
+    },
+    handle(handlerInput) {
+        const intentName = Alexa.getIntentName(handlerInput.requestEnvelope);
+        const speakOutput = `You just triggered ${intentName}`;
+
+        return handlerInput.responseBuilder
+            .speak(speakOutput)
+            .getResponse();
+    }
+};
+
+/**
+ * Error handler
+ */
 const ErrorHandler = {
     canHandle() {
         return true;
     },
     handle(handlerInput, error) {
-        const speakOutput = "I'm having trouble getting data";
-        console.log(`~~~~ Error handled: ${JSON.stringify(error)}`);
+        console.error(`Error handled: ${error.stack}`);
+        const speakOutput = 'Sorry, I had trouble doing what you asked. Please try again.';
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
@@ -171,14 +278,37 @@ const ErrorHandler = {
     }
 };
 
-// Lambda handler
+/**
+ * Request interceptor for logging
+ */
+const RequestInterceptor = {
+    process(handlerInput) {
+        console.log(`REQUEST: ${JSON.stringify(handlerInput.requestEnvelope)}`);
+    }
+};
+
+/**
+ * Response interceptor for logging
+ */
+const ResponseInterceptor = {
+    process(handlerInput, response) {
+        console.log(`RESPONSE: ${JSON.stringify(response)}`);
+    }
+};
+
+/**
+ * Skill builder and exports
+ */
 exports.handler = Alexa.SkillBuilders.custom()
     .addRequestHandlers(
         LaunchRequestHandler,
         RowingConditionsIntentHandler,
         HelpIntentHandler,
         CancelAndStopIntentHandler,
-        SessionEndedRequestHandler
+        SessionEndedRequestHandler,
+        IntentReflectorHandler
     )
     .addErrorHandlers(ErrorHandler)
+    .addRequestInterceptors(RequestInterceptor)
+    .addResponseInterceptors(ResponseInterceptor)
     .lambda();

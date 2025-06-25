@@ -3,24 +3,24 @@
     "apis": {
       "custom": {
         "endpoint": {
-          "uri": "arn:aws:lambda:eu-west-1:975050242369:function:efff46fa-8eea-46f1-b566-5039c615ebb0:Release_0"
+          "uri": "arn:aws:lambda:eu-west-1:975050242369:function:ebaa32e6-5357-4d29-889a-1188655fd3ad:Release_0"
         },
         "interfaces": [],
         "locales": {},
         "regions": {
           "NA": {
             "endpoint": {
-              "uri": "arn:aws:lambda:us-east-1:975050242369:function:efff46fa-8eea-46f1-b566-5039c615ebb0:Release_0"
+              "uri": "arn:aws:lambda:us-east-1:975050242369:function:ebaa32e6-5357-4d29-889a-1188655fd3ad:Release_0"
             }
           },
           "EU": {
             "endpoint": {
-              "uri": "arn:aws:lambda:eu-west-1:975050242369:function:efff46fa-8eea-46f1-b566-5039c615ebb0:Release_0"
+              "uri": "arn:aws:lambda:eu-west-1:975050242369:function:ebaa32e6-5357-4d29-889a-1188655fd3ad:Release_0"
             }
           },
           "FE": {
             "endpoint": {
-              "uri": "arn:aws:lambda:us-west-2:975050242369:function:efff46fa-8eea-46f1-b566-5039c615ebb0:Release_0"
+              "uri": "arn:aws:lambda:us-west-2:975050242369:function:ebaa32e6-5357-4d29-889a-1188655fd3ad:Release_0"
             }
           }
         }
@@ -39,7 +39,7 @@
             "help"
           ],
           "keywords": [],
-          "name": "Can I Row Today",
+          "name": "can i row today",
           "summary": "Sample Short Description"
         }
       },

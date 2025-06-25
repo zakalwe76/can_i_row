@@ -3,6 +3,17 @@
     "languageModel": {
       "intents": [
         {
+          "slots": [],
+          "name": "RowingConditionsIntent",
+          "samples": [
+            "can i row today",
+            "what are the rowing conditions",
+            "is it safe to row",
+            "check rowing conditions",
+            "rowing status"
+          ]
+        },
+        {
           "name": "AMAZON.CancelIntent",
           "samples": []
         },
@@ -34,18 +45,6 @@
         {
           "name": "AMAZON.FallbackIntent",
           "samples": []
-        },
-        {
-          "slots": [],
-          "name": "RowingConditionsIntent",
-          "samples": [
-            "are there any rowing restrictions today",
-            "check rowing conditions",
-            "what\u0027s the flow rate",
-            "What is the current flow rate",
-            "Can we row today",
-            "Can I row today"
-          ]
         }
       ],
       "types": [],

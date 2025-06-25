@@ -1,15 +1,22 @@
 {
   "name": "can-i-row-today",
   "version": "1.0.0",
-  "description": "Alexa skill to check rowing conditions based on flow rate",
+  "description": "Alexa skill to check rowing conditions based on river flow data",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
     "ask-sdk-core": "^2.7.0",
-    "ask-sdk-model": "^1.19.0"
+    "ask-sdk-model": "^1.19.0",
+    "aws-sdk": "^2.326.0"
   },
-  "author": "Bill Trotter",
+  "keywords": [
+    "alexa",
+    "skill",
+    "rowing",
+    "river-flow"
+  ],
+  "author": "bill t",
   "license": "MIT"
 }
