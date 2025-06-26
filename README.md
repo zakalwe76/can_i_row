@@ -1,6 +1,7 @@
 # Can I Row Today - Alexa Skill
 
 This is an Alexa-hosted skill that checks UK Environment Agency river flow data to determine rowing conditions.
+Specifically, it checks the flow conditions at Reading, UK https://environment.data.gov.uk/flood-monitoring/id/measures/2200TH-flow--Mean-15_min-m3_s
 
 ## Note:
 I am a novice developer. I used Claude (https://claude.ai/) to generate the code and deployment instructions for me and then worked it out.
