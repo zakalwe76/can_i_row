@@ -2,6 +2,14 @@
 
 This is an Alexa-hosted skill that checks UK Environment Agency river flow data to determine rowing conditions.
 
+## Note:
+I am a novice developer. I used Claude (https://claude.ai/) to generate the code and deployment instructions for me and then worked it out.
+
+## IMPORTANT NOTE ON WATER SAFETY
+This skill is based on Reading Rowing Club's water safety rules (https://www.readingrc.com/members/2016/4/30/water-safety). Every rowing club has their own safety rules and polices. This Alexa skill is meant to help make it easier to check conditions without using a device with a screen. in all circumstances use your best judgement when it comes to water safety and if in doubt, use your club's official guidance. If you are in doubt, don't row. 
+
+The Author of this skill cannot take responsiblity for the accuracy of the data or be held accountable for actions taken using this skill 
+
 ## Files Structure
 
 Your Alexa-hosted skill will need these files:
