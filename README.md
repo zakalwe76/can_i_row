@@ -11,6 +11,9 @@ This skill is based on Reading Rowing Club's water safety rules (https://www.rea
 
 The Author of this skill cannot take responsiblity for the accuracy of the data or be held accountable for actions taken using this skill 
 
+## Important note. This skill is still in testing phase and not yet published on Alexa. 
+It does work in test, but I've not deployed it yet as I have a few more checks to run and also, importantly, I'd like to clear it with Reading Rowing Club's water safety officer
+
 ## Files Structure
 
 Your Alexa-hosted skill will need these files:
