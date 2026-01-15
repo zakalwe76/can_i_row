@@ -126,13 +126,13 @@ function generateReply(flowData) {
     let reply;
     
     if (flowValue <= 50) {
-        reply = `As of ${formattedDateTime}, the current flow rate is ${flowValue}, there are no restrictions today`;
+        reply = `As of ${formattedDateTime}, the current flow rate at Reading UK is ${flowValue}, there are no restrictions today. Please use you're best judgement and consult with your coach and squad vice captain if unsure`;
     } else if (flowValue >= 51 && flowValue <= 75) {
-        reply = `As of ${formattedDateTime}, the current flow rate is ${flowValue}, there are High Flow restrictions today. No novice coxes or steerpersons`;
+        reply = `As of ${formattedDateTime}, the current flow rate at Reading UK is ${flowValue}, there are High Flow restrictions today. No novice coxes or steerpersons. Please use you're best judgement and consult with your coach and squad vice captain if unsure`;
     } else if (flowValue >= 76 && flowValue <= 100) {
-        reply = `As of ${formattedDateTime}, the current flow rate is ${flowValue}, there are Very High Flow restrictions today. No singles, doubles, or pairs today`;
+        reply = `As of ${formattedDateTime}, the current flow rate at Reading UK is ${flowValue}, there are Very High Flow restrictions today. No singles, doubles, or pairs today. Please use you're best judgement and consult with your coach and squad vice captain if unsure`;
     } else {
-        reply = `As of ${formattedDateTime}, the current flow rate is ${flowValue}, there is no rowing today, it's too dangerous.`;
+        reply = `As of ${formattedDateTime}, the current flow rate at Reading UK is ${flowValue}, there is no rowing today, it's too dangerous. Please use you're best judgement and consult with your coach and squad vice captain if unsure`;
     }
     
     console.log('Generated reply:', reply);
@@ -203,7 +203,7 @@ const HelpIntentHandler = {
             && Alexa.getIntentName(handlerInput.requestEnvelope) === 'AMAZON.HelpIntent';
     },
     handle(handlerInput) {
-        const speakOutput = 'I can tell you if it\'s safe to row today based on river flow conditions. Just ask "can I row today?" and I\'ll check the latest flow data from the UK Environment Agency.';
+        const speakOutput = 'I can tell you if it\'s safe to row today at Reading Rowing Club based on river flow conditions. Just ask "can I row today?" and I\'ll check the latest flow data for Reading UK from the UK Environment Agency.';
 
         return handlerInput.responseBuilder
             .speak(speakOutput)
