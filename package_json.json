@@ -1,7 +1,7 @@
 {
   "name": "can-i-row-today",
   "version": "1.0.0",
-  "description": "Alexa skill to check rowing conditions based on flow rate",
+  "description": "Alexa skill to check rowing conditions based on flow rate for Reading Rowing Club",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
