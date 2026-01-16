@@ -3,7 +3,7 @@
     "publishingInformation": {
       "locales": {
         "en-GB": {
-          "summary": "Check rowing conditions based on current water flow rates",
+          "summary": "Check rowing conditions for Reading Rowing Club  based on current water flow rates",
           "examplePhrases": [
             "Alexa, ask can I row today",
             "Alexa, ask can I row today what is the current flow rate",
@@ -17,7 +17,7 @@
             "safety"
           ],
           "name": "Can I Row Today",
-          "description": "This skill helps rowers check current water flow conditions to determine if it's safe to row. It connects to the UK Environment Agency's real-time flood monitoring data to provide current flow rates and appropriate safety restrictions based on the water conditions."
+          "description": "This skill helps rowers at Reading Rowing Club check current water flow conditions to determine if it's safe to row. It connects to the UK Environment Agency's real-time flood monitoring data to provide current flow rates and appropriate safety restrictions based on the water conditions."
         }
       },
       "isAvailableWorldwide": false,
