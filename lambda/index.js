@@ -119,6 +119,9 @@ function generateReply(flowData) {
     const formattedDateTime = date.toLocaleString('en-GB', {
         timeZone: 'Europe/London',
         weekday: 'long',
+        month: 'long',
+        day: '2-digit',
+        year: 'numeric',
         hour: '2-digit',
         minute: '2-digit'
     });
@@ -126,13 +129,13 @@ function generateReply(flowData) {
     let reply;
     
     if (flowValue <= 50) {
-        reply = `As of ${formattedDateTime}, the current flow rate at Reading UK is ${flowValue}, there are no restrictions today. Please use you're best judgement and consult with your coach and squad vice captain if unsure`;
+        reply = `As of ${formattedDateTime}, the current flow rate at Reading UK is ${flowValue} cubic meters per second, there are no restrictions today. Please use you're best judgement and consult with your coach and squad vice captain if unsure`;
     } else if (flowValue >= 51 && flowValue <= 75) {
         reply = `As of ${formattedDateTime}, the current flow rate at Reading UK is ${flowValue}, there are High Flow restrictions today. No novice coxes or steerpersons. Please use you're best judgement and consult with your coach and squad vice captain if unsure`;
     } else if (flowValue >= 76 && flowValue <= 100) {
-        reply = `As of ${formattedDateTime}, the current flow rate at Reading UK is ${flowValue}, there are Very High Flow restrictions today. No singles, doubles, or pairs today. Please use you're best judgement and consult with your coach and squad vice captain if unsure`;
+        reply = `As of ${formattedDateTime}, the current flow rate at Reading UK is ${flowValue} cubic meters per second, there are Very High Flow restrictions today. No singles, doubles, or pairs today. Please use you're best judgement and consult with your coach and squad vice captain if unsure`;
     } else {
-        reply = `As of ${formattedDateTime}, the current flow rate at Reading UK is ${flowValue}, there is no rowing today, it's too dangerous. Please use you're best judgement and consult with your coach and squad vice captain if unsure`;
+        reply = `As of ${formattedDateTime}, the current flow rate at Reading UK is ${flowValue} cubic meters per second, there is no rowing today, it's too dangerous. Please use you're best judgement and consult with your coach and squad vice captain if unsure`;
     }
     
     console.log('Generated reply:', reply);
