@@ -129,13 +129,13 @@ function generateReply(flowData) {
     let reply;
     
     if (flowValue <= 50) {
-        reply = `As of ${formattedDateTime}, the current flow rate at Reading UK is ${flowValue} cubic meters per second, there are no restrictions today. Please use you're best judgement and consult with your coach and squad vice captain if unsure`;
+        reply = `As of ${formattedDateTime}, the current flow rate at Reading UK is ${flowValue} cubic meters per second, there are no restrictions today based on flow rate. There are factors other than flow rate that affect water safety. Please use you're best judgement and consult with your coach and squad vice captain before going on the water`;
     } else if (flowValue >= 51 && flowValue <= 75) {
-        reply = `As of ${formattedDateTime}, the current flow rate at Reading UK is ${flowValue}, there are High Flow restrictions today. No novice coxes or steerpersons. Please use you're best judgement and consult with your coach and squad vice captain if unsure`;
+        reply = `As of ${formattedDateTime}, the current flow rate at Reading UK is ${flowValue}, there are High Flow restrictions today. No novice coxes or steerpersons. There are factors other than flow rate that affect water safety. Please use you're best judgement and consult with your coach and squad vice captain before going on the water `;
     } else if (flowValue >= 76 && flowValue <= 100) {
-        reply = `As of ${formattedDateTime}, the current flow rate at Reading UK is ${flowValue} cubic meters per second, there are Very High Flow restrictions today. No singles, doubles, or pairs today. Please use you're best judgement and consult with your coach and squad vice captain if unsure`;
+        reply = `As of ${formattedDateTime}, the current flow rate at Reading UK is ${flowValue} cubic meters per second, there are Very High Flow restrictions today. No singles, doubles, or pairs today. There are factors other than flow rate that affect water safety. Please use you're best judgement and consult with your coach and squad vice captain before going on the water`;
     } else {
-        reply = `As of ${formattedDateTime}, the current flow rate at Reading UK is ${flowValue} cubic meters per second, there is no rowing today, it's too dangerous. Please use you're best judgement and consult with your coach and squad vice captain if unsure`;
+        reply = `As of ${formattedDateTime}, the current flow rate at Reading UK is ${flowValue} cubic meters per second, there is no rowing today, it's too dangerous. There are factors other than flow rate that affect water safety. Please use you're best judgement and consult with your coach and squad vice captain before going on the water`;
     }
     
     console.log('Generated reply:', reply);
